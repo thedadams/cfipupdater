@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ipupdater
+  namespace: cfip
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: updater
+              image: thedadams/cfipupdater:latest
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: CLOUDFLARE_EMAIL
+                  value: something@example.com
+                - name: DOMAIN_NAME
+                  value: example.com
+                - name: SUBDOMAIN
+                  value: sub
+                - name: CLOUDFLARE_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: keyinfo
+                      key: cloudflareKey
+                - name: PUSHOVER_APP_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: keyinfo
+                      key: pushoverAppToken
+                - name: PUSHOVER_USER_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: keyinfo
+                      key: pushoverUserToken
+          restartPolicy: Never
