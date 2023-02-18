@@ -16,7 +16,7 @@ If you would like Pushover notifications sent on success or failure of the updat
 The image can be built with the included Dockerfile. Running `docker build .` is enough to get a working image.
 
 ## Running
-After building the image (or using `thedadams/cfipupdater` from Docker Hub), you can start the container with `docker run` or in a Kubernetes cluster with the provided `CronJob`.
+After building the image (or using `thedadams/cfipupdater:latest` from Docker Hub), you can start the container with `docker run` or in a Kubernetes cluster with the provided `CronJob`.
 ### Environment Variables
 The image expects the following environment variables to be set:
 - `CLOUDFLARE_EMAIL`
@@ -31,3 +31,9 @@ The included `CronJob` expects the three keys to be given from a `Secret`. A sam
 If running in Docker, then you can set the envorionment variables with:
 `docker run -e CLOUDFLARE_EMAIL=something@example.com -e DOMAIN_NAME=example.com ... <IMAGE_ID>`
 Note that the three keys should not be `base64` encoded if running via Docker.
+
+## Acorn
+[Acorn](https://acorn.io) is a nice new project from the creators of Rancher. It is a simple way of running containerized applications. You can use the included Acornfile to deploy this as a cronjob Acorn. Follow these steps to do so:
+1. Install Acorn on a Kubernetes cluster
+2. Create a secret to hold the account information: `acorn secret create --data cloudflareKey=<CLOUDFLARE KEY> --data pushoverAppToken=<APP KEY> --data pushoverUserToken=<USER KEY> cfip-keyinfo`
+3. Run the cronjob and bind the secret you created to the secret in the app: `acorn run --wait=false -s cfip-keyinfo:key-info docker.io/thedadams/cfipupdater:acorn --cloudflare-email=<YOUR CLOUDFLARE EMAIL> --domain <YOUR DOMAIN NAME> --subdoman <YOUR SUBDMAIN>`

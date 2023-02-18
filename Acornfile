@@ -1,0 +1,28 @@
+args: {
+    cloudflareEmail: ""
+    domain: ""
+    subdomain: ""
+}
+
+jobs: {
+    "cfip-updater": {
+        image: "docker.io/thedadams/cfipupdater:latest"
+
+        env: {
+            "CLOUDFLARE_EMAIL": args.cloudflareEmail
+            "DOMAIN_NAME": args.domain
+            "SUBDOMAIN": args.subdomain
+            "CLOUDFLARE_KEY": "secret://key-info/cloudflareKey"
+            "PUSHOVER_APP_TOKEN": "secret://key-info/pushoverAppToken"
+            "PUSHOVER_USER_TOKEN": "secret://key-info/pushoverUserToken"
+        }
+
+        schedule: "@hourly"
+    }
+}
+
+secrets: {
+    "key-info": {
+        type: "opaque"
+    }
+}
